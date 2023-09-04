@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="89a1b69e-46b8-4863-aed2-e0a1e856e6ee" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<flow name="redirect-apiFlow" doc:id="5d280fa5-e003-41a3-83c0-d7e1d554af52" >
+		<http:listener doc:name="Listener" doc:id="7edf0f07-e241-44c5-9491-771cdb1e5147" config-ref="HTTP_Listener_config" path="redirect">
+			<http:response statusCode="302" >
+				<http:headers ><![CDATA[#[output application/java
+---
+{
+	"Location" : payload
+}]]]></http:headers>
+			</http:response>
+		</http:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="9bcb594e-6e6e-4b08-87f5-07368ebedef2" />
+		<ee:transform doc:name="set-redirect-url" doc:id="7c7bcfed-4124-4a23-a721-9cfa1477d3a1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+"https://www.google.co.in/"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>
